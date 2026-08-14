@@ -16,11 +16,6 @@ const createUserValidator = [
     .withMessage("Email is required")
     .isEmail()
     .withMessage("Email must be a valid email"),
-
-  body("role")
-    .optional()
-    .isString()
-    .withMessage("Role must be a string"),
 ];
 
 const registerValidator = [

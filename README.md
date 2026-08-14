@@ -82,6 +82,15 @@ The `/:id` route must come after the literal `/register` and `/login` routes, so
 | `PATCH`  | `/courses/:id`       | Update an existing course   |
 | `DELETE` | `/courses/:id`       | Delete a course by ID       |
 
+### User Object
+
+| Field         | Type    | Description                        |
+| ------------- | ------- | ---------------------------------- |
+| `name`        | string  | User name (required)               |
+| `email`       | string  | Valid email address (required)     |
+| `phonNumber`  | string  | Phone number (used at registration)|
+| `password`    | string  | Password, min 6 characters (required at registration) |
+
 ### User Authentication
 
 Passwords are hashed with **bcrypt** (cost factor 12); the plaintext password is never stored or returned.
@@ -129,7 +138,9 @@ Returns `200` with the user (without the password hash), or `401` on invalid cre
 
 ### Request Validation
 
-All validation runs as middleware in `routes/courses.routes.js` **before** the controller is reached. Controllers contain business logic only.
+All validation runs as middleware in `routes/*.routes.js` **before** the controller is reached. Controllers contain business logic only.
+
+#### Courses
 
 | Endpoint         | Validators applied                                   |
 | ---------------- | ---------------------------------------------------- |
@@ -138,6 +149,17 @@ All validation runs as middleware in `routes/courses.routes.js` **before** the c
 | `POST /courses`          | `createCourseValidator` — validates the request body |
 | `PATCH /courses/:id`     | `idValidator` + `createCourseValidator`              |
 | `DELETE /courses/:id`    | `idValidator` — `:id` must be a valid Mongo ObjectId |
+
+#### Users
+
+| Endpoint         | Validators applied                                   |
+| ---------------- | ---------------------------------------------------- |
+| `POST /users/register`  | `registerValidator` — validates the request body |
+| `POST /users/login`     | `loginValidator` — validates the request body |
+| `GET /users/:id`        | `idValidator` — `:id` must be a valid Mongo ObjectId |
+| `POST /users`           | `createUserValidator` — validates the request body |
+| `PATCH /users/:id`      | `idValidator` + `createUserValidator` |
+| `DELETE /users/:id`     | `idValidator` — `:id` must be a valid Mongo ObjectId |
 
 Invalid requests are rejected with HTTP `400` before reaching the controller.
 
@@ -198,7 +220,8 @@ learning-platform-api/
 │   ├── courses.routes.js   # Course routes + validator middleware wiring
 │   └── users.routes.js     # User routes (register, login, CRUD)
 ├── validator/
-│   └── courses.validator.js # express-validator rules (id + create/update body)
+│   ├── courses.validator.js # express-validator rules for courses (id + body)
+│   └── users.validator.js   # express-validator rules for users (id + body)
 ├── .env.example            # Environment variables template
 └── package.json
 ```
@@ -206,7 +229,7 @@ learning-platform-api/
 ## Roadmap
 
 - [x] User routes and authentication
-- [ ] User validation (express-validator rules for register/login)
+- [x] User validation (express-validator rules for register/login)
 - [ ] Models layer
 - [ ] Tests
 - [ ] API documentation (Swagger/OpenAPI)

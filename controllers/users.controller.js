@@ -33,11 +33,10 @@ const getUserById = async (req, res) => {
 };
 
 const createUser = async (req, res) => {
-  const { name, email, role } = req.body;
+  const { name, email } = req.body;
   const newUser = {
     name,
     email,
-    role,
   };
   await db.users_collection.insertOne(newUser);
   res.status(201).json({
@@ -49,7 +48,7 @@ const createUser = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-  const { name, email, role } = req.body;
+  const { name, email } = req.body;
   const { id } = req.params;
   const user = await db.users_collection.updateOne(
     { _id: new ObjectId(id) },
@@ -57,7 +56,6 @@ const updateUser = async (req, res) => {
       $set: {
         name,
         email,
-        role,
       },
     },
   );
