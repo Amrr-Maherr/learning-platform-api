@@ -9,6 +9,7 @@ A RESTful API for a learning platform, built with **Node.js** and **Express**, u
 - [MongoDB](https://www.mongodb.com/) — NoSQL database (via the official `mongodb` driver)
 - [express-validator](https://express-validator.github.io/) — request validation
 - [morgan](https://github.com/expressjs/morgan) — HTTP request logging
+- [bcrypt](https://github.com/kelektiv/node.bcrypt.js) — password hashing
 - [dotenv](https://github.com/motdotla/dotenv) — environment variables
 
 ## Getting Started
@@ -57,6 +58,22 @@ The server will connect to MongoDB and start listening. By default it runs at `h
 
 Base URL: `http://localhost:3000/api/v1`
 
+### Users
+
+| Method   | Endpoint         | Description                          |
+| -------- | ---------------- | ------------------------------------ |
+| `POST`   | `/users/register` | Register a new user (hashes password) |
+| `POST`   | `/users/login`    | Login with email and password         |
+| `GET`    | `/users`          | Get all users                        |
+| `GET`    | `/users/:id`      | Get a single user by ID              |
+| `POST`   | `/users`          | Create a new user                    |
+| `PATCH`  | `/users/:id`      | Update an existing user              |
+| `DELETE` | `/users/:id`      | Delete a user by ID                  |
+
+The `/:id` route must come after the literal `/register` and `/login` routes, so the word `register`/`login` is never treated as an ID.
+
+### Courses
+
 | Method   | Endpoint             | Description                 |
 | -------- | -------------------- | --------------------------- |
 | `GET`    | `/courses`           | Get all courses             |
@@ -64,6 +81,38 @@ Base URL: `http://localhost:3000/api/v1`
 | `POST`   | `/courses`           | Create a new course         |
 | `PATCH`  | `/courses/:id`       | Update an existing course   |
 | `DELETE` | `/courses/:id`       | Delete a course by ID       |
+
+### User Authentication
+
+Passwords are hashed with **bcrypt** (cost factor 12); the plaintext password is never stored or returned.
+
+#### Register
+
+```bash
+curl -X POST http://localhost:3000/api/v1/users/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Jane Doe",
+    "email": "jane@example.com",
+    "phonNumber": "123456789",
+    "password": "secret123"
+  }'
+```
+
+Returns `201` with the created user (without the password hash). Returns `409` if the email is already registered.
+
+#### Login
+
+```bash
+curl -X POST http://localhost:3000/api/v1/users/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "jane@example.com",
+    "password": "secret123"
+  }'
+```
+
+Returns `200` with the user (without the password hash), or `401` on invalid credentials.
 
 ### Course Object
 
@@ -141,23 +190,23 @@ learning-platform-api/
 ├── config/
 │   └── db.js               # MongoDB connection
 ├── controllers/
-│   └── courses.controller.js  # Request handlers for courses
+│   ├── courses.controller.js  # Request handlers for courses
+│   └── users.controller.js    # Request handlers for users (incl. register/login)
 ├── middlewares/
 │   └── validate.js         # Validation-result middleware (returns 400 on errors)
 ├── routes/
 │   ├── courses.routes.js   # Course routes + validator middleware wiring
-│   └── users.routes.js     # User routes (WIP)
+│   └── users.routes.js     # User routes (register, login, CRUD)
 ├── validator/
 │   └── courses.validator.js # express-validator rules (id + create/update body)
-├── models/                 # (empty — reserved for models)
-├── utils/                  # (empty — reserved for utilities)
 ├── .env.example            # Environment variables template
 └── package.json
 ```
 
 ## Roadmap
 
-- [ ] User routes and authentication
+- [x] User routes and authentication
+- [ ] User validation (express-validator rules for register/login)
 - [ ] Models layer
 - [ ] Tests
 - [ ] API documentation (Swagger/OpenAPI)
