@@ -68,10 +68,26 @@ const updateCourse = (req, res) => {
   });
 };
 
-const deleteCourse = (req, res) => {
-  res.status(200).json({
-    message: "Course deleted successfully.",
+const deleteCourse = async (req, res) => {
+  const id = req.params.id;
+  const course = await db.courses_collection.deleteOne({
+    _id: new ObjectId(id),
   });
+  console.log(course);
+
+  if (course.deletedCount === 0) {
+    res.status(404).json({
+      message: "field",
+      data: {
+        title: "course not found!",
+      },
+    });
+  } else {
+    res.status(200).json({
+      message: "success",
+      data: null,
+    });
+  }
 };
 
 module.exports = {
