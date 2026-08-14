@@ -9,25 +9,32 @@ const {
   register,
   login,
 } = require("../controllers/users.controller");
+const validate = require("../middlewares/validate");
+const {
+  createUserValidator,
+  registerValidator,
+  loginValidator,
+  idValidator,
+} = require("../validator/users.validator");
 
 const usersRoutes = express.Router();
 
 // Get all users
 usersRoutes.get("/", getAllUsers);
 
-usersRoutes.post("/register", register);
-usersRoutes.post("/login", login);
+usersRoutes.post("/register", registerValidator, validate, register);
+usersRoutes.post("/login", loginValidator, validate, login);
 
 // Get single user
-usersRoutes.get("/:id", getUserById);
+usersRoutes.get("/:id", idValidator, validate, getUserById);
 
 // Create new user
-usersRoutes.post("/", createUser);
+usersRoutes.post("/", createUserValidator, validate, createUser);
 
 // Update user
-usersRoutes.patch("/:id", updateUser);
+usersRoutes.patch("/:id", idValidator, createUserValidator, validate, updateUser);
 
 // Delete user
-usersRoutes.delete("/:id", deleteUser);
+usersRoutes.delete("/:id", idValidator, validate, deleteUser);
 
 module.exports = usersRoutes;

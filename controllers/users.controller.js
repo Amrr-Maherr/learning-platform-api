@@ -14,14 +14,6 @@ const getAllUsers = async (req, res) => {
 
 const getUserById = async (req, res) => {
   const { id } = req.params;
-  if (!ObjectId.isValid(id)) {
-    return res.status(400).json({
-      message: "failed",
-      data: {
-        message: "invalid user id!",
-      },
-    });
-  }
   const user = await db.users_collection.findOne({ _id: new ObjectId(id) });
   if (!user) {
     res.status(404).json({
