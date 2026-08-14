@@ -1,5 +1,5 @@
 const { db } = require("../config/db");
-const { ObjectId } = require("mongodb");
+const { ObjectId, save } = require("mongodb");
 const getAllCourses = async (req, res) => {
   const allCourses = await db.courses_collection.find().toArray();
   res.status(200).json({
@@ -31,9 +31,34 @@ const getCourseById = async (req, res) => {
   }
 };
 
-const createCourse = (req, res) => {
+const createCourse = async (req, res) => {
+  // const allCourses = await db.courses_collection.find();
+  const {
+    title,
+    instructor,
+    category,
+    price,
+    rating,
+    duration,
+    level,
+    students,
+  } = req.body;
+  const newCourse = {
+    title,
+    instructor,
+    category,
+    price,
+    rating,
+    duration,
+    level,
+    students,
+  };
+  await db.courses_collection.insertOne(newCourse);
   res.status(201).json({
-    message: "Course created successfully.",
+    message: "success",
+    data: {
+      course: newCourse,
+    },
   });
 };
 
