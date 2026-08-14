@@ -137,17 +137,27 @@ const login = async (req, res) => {
   const { email, password } = req.body;
   const user = await db.users_collection.findOne({
     email,
-    password,
   });
   if (!user) {
     return res.status(401).json({
       message: "Invalid email or password",
     });
   }
-  res.status(201).json({
-    message: "success",
+  const isPasswordCorrect = await bcrypt.compare(password, user.password);
+  if (!isPasswordCorrect) {
+    return res.status(401).json({
+      message: "Invalid  password",
+    });
+  }
+  res.status(200).json({
+    message: "Login successful",
     data: {
-      user: req.body,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phonNumber: user.phonNumber,
+      },
     },
   });
 };
