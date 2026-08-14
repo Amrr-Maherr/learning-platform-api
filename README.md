@@ -78,6 +78,20 @@ Base URL: `http://localhost:3000/api/v1`
 | `level`      | string   | Difficulty level                     |
 | `students`   | integer  | Enrolled students, must be `>= 0`    |
 
+### Request Validation
+
+All validation runs as middleware in `routes/courses.routes.js` **before** the controller is reached. Controllers contain business logic only.
+
+| Endpoint         | Validators applied                                   |
+| ---------------- | ---------------------------------------------------- |
+| `GET /courses`           | —                                        |
+| `GET /courses/:id`       | `idValidator` — `:id` must be a valid Mongo ObjectId |
+| `POST /courses`          | `createCourseValidator` — validates the request body |
+| `PATCH /courses/:id`     | `idValidator` + `createCourseValidator`              |
+| `DELETE /courses/:id`    | `idValidator` — `:id` must be a valid Mongo ObjectId |
+
+Invalid requests are rejected with HTTP `400` before reaching the controller.
+
 ### Example: Create a Course
 
 ```bash
@@ -129,15 +143,15 @@ learning-platform-api/
 ├── controllers/
 │   └── courses.controller.js  # Request handlers for courses
 ├── middlewares/
-│   └── validate.js         # Validation result middleware
+│   └── validate.js         # Validation-result middleware (returns 400 on errors)
 ├── routes/
-│   ├── courses.routes.js   # Course routes
+│   ├── courses.routes.js   # Course routes + validator middleware wiring
 │   └── users.routes.js     # User routes (WIP)
 ├── validator/
-│   └── courses.validator.js # express-validator rules
+│   └── courses.validator.js # express-validator rules (id + create/update body)
 ├── models/                 # (empty — reserved for models)
 ├── utils/                  # (empty — reserved for utilities)
-├── .env                    # Environment variables
+├── .env.example            # Environment variables template
 └── package.json
 ```
 
