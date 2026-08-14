@@ -18,7 +18,7 @@ const getCourseById = async (req, res) => {
     res.status(404).json({
       message: "field",
       data: {
-        title: "course not found!",
+        message: "course not found!",
       },
     });
   } else {
