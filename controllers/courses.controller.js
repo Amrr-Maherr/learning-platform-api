@@ -32,7 +32,6 @@ const getCourseById = async (req, res) => {
 };
 
 const createCourse = async (req, res) => {
-  // const allCourses = await db.courses_collection.find();
   const {
     title,
     instructor,
@@ -75,15 +74,6 @@ const updateCourse = async (req, res) => {
   } = req.body;
 
   const { id } = req.params;
-
-  if (!id) {
-    return res.status(400).json({
-      message: "failed",
-      data: {
-        message: "Course ID is required.",
-      },
-    });
-  }
 
   const course = await db.courses_collection.updateOne(
     { _id: new ObjectId(id) },

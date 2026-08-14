@@ -1,7 +1,10 @@
 const { body, param } = require("express-validator");
 
-const createCourseValidator = [
+const idValidator = [
   param("id").isMongoId().withMessage("Invalid course ID"),
+];
+
+const createCourseValidator = [
   body("title")
     .notEmpty()
     .withMessage("Title is required")
@@ -25,4 +28,5 @@ const createCourseValidator = [
 
 module.exports = {
   createCourseValidator,
+  idValidator,
 };

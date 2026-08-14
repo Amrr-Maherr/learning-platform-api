@@ -7,6 +7,8 @@ const {
   updateCourse,
   deleteCourse,
 } = require("../controllers/courses.controller");
+const validate = require("../middlewares/validate");
+const { createCourseValidator, idValidator } = require("../validator/courses.validator");
 
 const coursesRoutes = express.Router();
 
@@ -17,10 +19,10 @@ coursesRoutes.get("/", getAllCourses);
 coursesRoutes.get("/:id", getCourseById);
 
 // Create new course
-coursesRoutes.post("/", createCourse);
+coursesRoutes.post("/", createCourseValidator, validate, createCourse);
 
 // Update course
-coursesRoutes.patch("/:id", updateCourse);
+coursesRoutes.patch("/:id", idValidator, createCourseValidator, validate, updateCourse);
 
 // Delete course
 coursesRoutes.delete("/:id", deleteCourse);
