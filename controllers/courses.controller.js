@@ -85,15 +85,6 @@ const updateCourse = async (req, res) => {
     });
   }
 
-  if (!req.body) {
-    return res.status(400).json({
-      message: "failed",
-      data: {
-        message: "Please provide at least one field to update.",
-      },
-    });
-  }
-
   const course = await db.courses_collection.updateOne(
     { _id: new ObjectId(id) },
     {
