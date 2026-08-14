@@ -62,9 +62,59 @@ const createCourse = async (req, res) => {
   });
 };
 
-const updateCourse = (req, res) => {
+const updateCourse = async (req, res) => {
+  const {
+    title,
+    instructor,
+    category,
+    price,
+    rating,
+    duration,
+    level,
+    students,
+  } = req.body;
+
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({
+      message: "failed",
+      data: {
+        message: "Course ID is required.",
+      },
+    });
+  }
+
+  if (!req.body) {
+    return res.status(400).json({
+      message: "failed",
+      data: {
+        message: "Please provide at least one field to update.",
+      },
+    });
+  }
+
+  const course = await db.courses_collection.updateOne(
+    { _id: new ObjectId(id) },
+    {
+      $set: {
+        title,
+        instructor,
+        category,
+        price,
+        rating,
+        duration,
+        level,
+        students,
+      },
+    },
+  );
+
   res.status(200).json({
-    message: "Course updated successfully.",
+    message: "success",
+    data: {
+      course,
+    },
   });
 };
 
