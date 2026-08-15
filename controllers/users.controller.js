@@ -2,7 +2,12 @@ const { db } = require("../config/db");
 const { ObjectId } = require("mongodb");
 const bcrypt = require("bcrypt");
 const getAllUsers = async (req, res) => {
-  const { name, price } = req.query;
+  const { name, price, page = 1, limit = 10 } = req.query;
+
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
+
+  const skip = (pageNumber - 1) * limitNumber;
 
   const filter = {};
 
@@ -16,7 +21,11 @@ const getAllUsers = async (req, res) => {
     };
   }
 
-  const allUsers = await db.users_collection.find(filter).toArray();
+  const allUsers = await db.users_collection
+    .find(filter)
+    .skip(skip)
+    .limit(limitNumber)
+    .toArray();
 
   res.status(200).json({
     message: "success",

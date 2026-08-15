@@ -1,12 +1,25 @@
 const { db } = require("../config/db");
 const { ObjectId, save } = require("mongodb");
 const getAllCourses = async (req, res) => {
-  const { title, page, limit } = req.query;
+  const { title, page = 1, limit = 10 } = req.query;
+
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
+
+  const skip = (pageNumber - 1) * limitNumber;
+
+  const filter = {};
+
+  if (title) {
+    filter.title = title;
+  }
+
   const allCourses = await db.courses_collection
-    .find({
-      title,
-    })
+    .find(filter)
+    .skip(skip)
+    .limit(limitNumber)
     .toArray();
+
   res.status(200).json({
     message: "success",
     results: allCourses.length,
