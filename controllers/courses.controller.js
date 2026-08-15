@@ -1,7 +1,7 @@
 const { db } = require("../config/db");
 const { ObjectId, save } = require("mongodb");
 const getAllCourses = async (req, res) => {
-  const { title } = req.query;
+  const { title, page, limit } = req.query;
   const allCourses = await db.courses_collection
     .find({
       title,
@@ -9,7 +9,7 @@ const getAllCourses = async (req, res) => {
     .toArray();
   res.status(200).json({
     message: "success",
-    length: allCourses.length,
+    results: allCourses.length,
     data: {
       courses: allCourses,
     },
