@@ -2,7 +2,20 @@ const { db } = require("../config/db");
 const { ObjectId } = require("mongodb");
 const bcrypt = require("bcrypt");
 const getAllUsers = async (req, res) => {
-  const allUsers = await db.users_collection.find().toArray();
+  const { name } = req.query;
+
+  let allUsers;
+
+  if (name) {
+    allUsers = await db.users_collection
+      .find({
+        name,
+      })
+      .toArray();
+  } else {
+    allUsers = await db.users_collection.find().toArray();
+  }
+
   res.status(200).json({
     message: "success",
     length: allUsers.length,
