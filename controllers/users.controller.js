@@ -2,29 +2,30 @@ const { db } = require("../config/db");
 const { ObjectId } = require("mongodb");
 const bcrypt = require("bcrypt");
 const getAllUsers = async (req, res) => {
-  const { name } = req.query;
+  const { name, price } = req.query;
 
-  let allUsers;
+  const filter = {};
 
   if (name) {
-    allUsers = await db.users_collection
-      .find({
-        name,
-      })
-      .toArray();
-  } else {
-    allUsers = await db.users_collection.find().toArray();
+    filter.name = name;
   }
+
+  if (price) {
+    filter.price = {
+      $gte: Number(price),
+    };
+  }
+
+  const allUsers = await db.users_collection.find(filter).toArray();
 
   res.status(200).json({
     message: "success",
-    length: allUsers.length,
+    results: allUsers.length,
     data: {
       users: allUsers,
     },
   });
 };
-
 const getUserById = async (req, res) => {
   const { id } = req.params;
   const user = await db.users_collection.findOne({ _id: new ObjectId(id) });
